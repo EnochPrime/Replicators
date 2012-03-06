@@ -1,0 +1,7 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "Votekick/rep_ctrl"
+	"$bumpmap"     "Votekick/rep_ctrl_BUMP"
+	"$surfaceprop" "metal"
+	"$model"     1
+}
