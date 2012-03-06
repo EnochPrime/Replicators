@@ -1,0 +1,1 @@
+Place the Replicators folder in your addons directory.
