@@ -6,11 +6,13 @@ ENT.Author = "JDM12989"
 ENT.AutomaticFrameAdvance = true
 ENT.ZatIgnore = true
 
-MsgN("=======================================================");
-MsgN("Replicator Base Code Initializing...");
-for _,file in pairs(file.FindInLua("entities/base_rep/modules/*.lua")) do
-	MsgN("Initializing: "..file);
-	include("modules/"..file);
+MsgN("LOADING MODULES:");
+for _,fn in pairs(file.Find("entities/base_rep/modules/*.lua","LUA")) do
+	if (SERVER) then
+		AddCSLuaFile("modules/"..fn);
+	end
+	include("modules/"..fn);
+	MsgN("./modules/"..fn);
 end
-MsgN("Replicator Base Code Initialized Successfully");
+MsgN("INITIALIZATION COMPLETE");
 MsgN("=======================================================");

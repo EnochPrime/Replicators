@@ -1,6 +1,6 @@
 /*
-	Replicator Basecode for GarrysMod10
-	Copyright (C) 2009  JDM12989
+	Replicator Basecode for GarrysMod
+	Copyright (C) 2013
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ function ENT:Initialize()
 	Replicators.Add(self);
 	
 	-- INTELLIGENCE
-	self.ai = "replicators/"..self:GetClass()..".txt";
+	self.ai = self:GetClass()..".lua";
 	self.code = {};
 	self:SetCode(self.ai);
 	self.freeze = false;
@@ -73,21 +73,23 @@ function ENT:OnTakeDamage(dmg)
 	if (self:GetNWInt("Health") == 0) then
 		-- remove from lists
 		Replicators.Remove(self);
-		if (self.leader and ValidEntity(self.leader)) then
+		if (self.leader and IsValid(self.leader)) then
 			table.remove(self.leader.minions,self.ENTINDEX);
 		end
 		self:Remove();
 		--fall apart
 		-- MAKE THEM WORK THE CORRECT WAY!!!
-		local str = "models/JDM12989/Replicators/"..self:GetClass().."/Gibs/";
-		for _,v in pairs(file.Find("../"..str.."*.mdl")) do
+		local str = "models/JDM12989/Replicators/Rep_N/Gibs/";
+		for i=1,19 do
 			local gib = ents.Create("block");
 			gib:SetPos(self:GetPos());
 			gib:SetAngles(self:GetAngles());
 			gib:Spawn();
-			gib:SetModel(str..v);
+			gib:SetModel(str..i..".mdl");
 			gib:PhysicsInit(SOLID_VPHYSICS);
 			gib:GetPhysicsObject():Wake();
+			gib.dead = true;
+			gib:OnRemove();
 		end
 	end
 end
@@ -96,10 +98,8 @@ end
 function ENT:SetCode(code)
 	local t = {};
 	local s = "";
-	if (file.Exists(code)) then
-		s = file.Read(code);
-	elseif (file.Exists("../../../data/"..code)) then
-		s = file.Read("../../../data/"..code);
+	if (file.Exists("stargate/replicators/code/"..code,"LUA")) then
+		s = file.Read("stargate/replicators/code/"..code,"LUA");
 	else
 		return;
 	end
@@ -118,6 +118,7 @@ function ENT:SelectSchedule()
 	while (not self.tasks and i < #self.code) do
 		if (self.freeze) then return end;
 		local s = self.code[i];
+		--MsgN("Running Str: "..s);
 		RunString(s);
 		i = i + 1;
 	end

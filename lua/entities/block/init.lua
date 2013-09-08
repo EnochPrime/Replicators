@@ -1,6 +1,6 @@
 /*
-	Replicator Block for GarrysMod10
-	Copyright (C) 2008  JDM12989
+	Replicator Block for GarrysMod
+	Copyright (C) 2013
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ function ENT:Initialize()
 	-- timer before fading away
 	timer.Create("block_delay_"..self.ENTINDEX,10,1,
 		function()
-			if (self and ValidEntity(self)) then
+			if (self and IsValid(self)) then
 				self.dead = true;
 				self:OnRemove();
 			end
@@ -60,7 +60,7 @@ function ENT:OnRemove()
 	-- actually remove after a while
 	timer.Simple(5,
 		function()
-			if (self and ValidEntity(self)) then
+			if (self and IsValid(self)) then
 				self:Remove();
 			end
 		end
