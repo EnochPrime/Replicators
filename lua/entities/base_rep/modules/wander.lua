@@ -1,33 +1,20 @@
 -- make rep wander about a 1000 unit radius with random 0-5 second wait or defined by params
--- returns true
+-- always returns true
 function ENT:Rep_AI_Wander(radius,min_wait,max_wait)
 	radius = radius or 1000;
 	min_wait = min_wait or 0;
 	max_wait = max_wait or 5;
 	
-	if (not self.wanderTime or CurTime() >= self.wanderTime + 2) then
-		local pos = self:GetPos();
-		pos.x = math.random(radius*-1,radius);
-		pos.y = math.random(radius*-1,radius);
-		self:SetLastPosition(pos);
-		self.wanderPos = pos;
-		self.wanderDelay = math.random(min_wait,max_wait);
-	end
-	self.wanderTime = CurTime();
 	local schd = ai_schedule.New();
-	schd:EngTask("TASK_GET_PATH_TO_LASTPOSITION",0);
+	schd:EngTask("TASK_GET_PATH_TO_RANDOM_NODE",radius);
 	schd:EngTask("TASK_FACE_PATH",0);
 	schd:EngTask("TASK_RUN_PATH",0);
 	schd:EngTask("TASK_WAIT_FOR_MOVEMENT",0);
-	--schd:EngTask("TASK_WAIT",self.wanderDelay);
-	if ((self.wanderPos - self:GetPos()):Length() >= 50) then
-		self:StartSchedule(schd);
-		self.wanderStart = CurTime();
-	end
-	if (self.wanderStart and CurTime() >= self.wanderStart + self.wanderDelay) then
-		self.wanderTime = -1;
-	end
-	--self.tasks = true;
+	schd:EngTask("TASK_WAIT",math.random(min_wait,max_wait));
+	
+	MsgN("Replicator " .. self.ENTINDEX .. " is wandering."); 
+	self:StartSchedule(schd);
+	return true;
 end
 
 local Data = {

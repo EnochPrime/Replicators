@@ -1,0 +1,9 @@
+"AddonInfo"
+{
+	"name"			"Replicators"
+	"version"		"development"
+	"up_date"		"22.03.2014"
+	"author_name"	"James"
+	"info"			"Replicators!"
+	"override"		"0"
+}

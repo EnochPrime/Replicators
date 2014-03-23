@@ -1,6 +1,6 @@
 /*
 	Replicator Basecode for GarrysMod
-	Copyright (C) 2013
+	Copyright (C) 2014
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -20,6 +20,14 @@
 AddCSLuaFile("cl_init.lua");
 AddCSLuaFile("shared.lua");
 include("shared.lua");
+
+	local schd = ai_schedule.New("Rep_Wander");
+--	schd:EngTask("TASK_GET_PATH_TO_LASTPOSITION",0);
+	schd:EngTask("TASK_GET_PATH_TO_RANDOM_NODE",128);
+	schd:EngTask("TASK_FACE_PATH",0);
+	schd:EngTask("TASK_RUN_PATH",0);
+	schd:EngTask("TASK_WAIT_FOR_MOVEMENT",0);
+	schd:EngTask("TASK_STOP_MOVING",0);
 
 --############### SENT CODE ###############
 ENT.CDSIgnore = true;
@@ -112,14 +120,15 @@ function ENT:SetCode(code)
 end
 
 --################# Select Schedule @JDM12989
-function ENT:SelectSchedule()
-	self.tasks = false;
-	local i = 1;
-	while (not self.tasks and i < #self.code) do
-		if (self.freeze) then return end;
-		local s = self.code[i];
-		--MsgN("Running Str: "..s);
-		RunString(s);
-		i = i + 1;
-	end
+function ENT:SelectSchedule()	
+	self:Rep_AI_Replicate();
+--	self.tasks = false;
+--	local i = 1;
+--	while (not self.tasks and i < #self.code) do
+--		if (self.freeze) then return end;
+--		local s = self.code[i];
+--		MsgN("Running Str: "..s);
+--		RunString(s);
+--		i = i + 1;
+--	end
 end

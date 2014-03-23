@@ -77,15 +77,19 @@ end
 
 -- finds the nearest object by it's class
 -- return closest ent by class
-function ENT:Find(s)
+function ENT:Find(class_name)
 	local e = nil;
 	local d = 10000; -- maximum find distance
 	local dist = 0;
 	local pos = self:GetPos();
-	for _,v in pairs(ents.FindInSphere(pos,d)) do
+	
+	-- step through all entities within sphere and find closest
+	for _,v in pairs(ents.FindInSphere(pos,d)) do	
 		local color = v:GetColor();
-		if (v:GetClass() == s and color.a == 255 and not table.HasValue(Replicators.IgnoreMe,v:GetModel())) then
-			if (Help.Can_Target(self,v)) then
+		-- if entity is of correct class, not invisible, and is not in ignore list
+		if (v:GetClass() == class_name and color.a == 255 and not table.HasValue(Replicators.IgnoreMe,v:GetModel())) then
+			-- if entity can be targeted		
+			if (Help.Can_Target(self,v)) then				
 				dist = (pos - v:GetPos()):Length();
 				if (dist < d) then
 					d = dist;
