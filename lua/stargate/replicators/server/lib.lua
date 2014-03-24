@@ -5,8 +5,14 @@ Replicators.HasGC = #file.Find("weapons/gmod_tool/stools/gcombat.lua","LUA") == 
 Replicators.HasSG = #file.Find("autorun/stargate.lua","LUA") == 1;
 
 Replicators.Reps = {};
-CreateConVar("replicator_limit","25",FCVAR_ARCHIVE);	-- rep limit
-CreateConVar("replicator_limit_bunch",5,FCVAR_ARCHIVE);	-- bunching limit
+-- maximum number of replicators that can be present
+CreateConVar("replicator_limit", 25, FCVAR_ARCHIVE);
+-- number of replicators which can target entity
+CreateConVar("replicator_limit_bunch", 5, FCVAR_ARCHIVE);
+-- number of resources a replicator can carry
+CreateConVar("replicator_max_material_carry", 1000, FCVAR_ARCHIVE);
+-- number of resources to create a repn
+CreateConVar("replicator_repn_required_material", 1000, FCVAR_ARCHIVE);
 
 Replicators.Enemies = {};
 Replicators.Human_Number = 1;	-- humanform number
@@ -19,8 +25,8 @@ Replicators.RequiredNumber["rep_q"] = 50;
 -- ARG variables
 Replicators.Immunities = {};
 Replicators.FreqLog = {};
-CreateConVar("replicator_arg_immunity_disable","0",FCVAR_ARCHIVE);
-CreateConVar("replicator_arg_immunity_after","5",FCVAR_ARCHIVE);
+CreateConVar("replicator_arg_immunity_disable", 0, FCVAR_ARCHIVE);
+CreateConVar("replicator_arg_immunity_after", 5, FCVAR_ARCHIVE);
 
 -- model ignore lists
 Replicators.IgnoreMe = {

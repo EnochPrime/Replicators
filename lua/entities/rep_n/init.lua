@@ -9,4 +9,5 @@ include("shared.lua");
 function ENT:Initialize()
 	self.BaseClass.Initialize(self);
 	self.leader = self:Find("rep_q");	-- default leader to nearest queen
+	self:SetMaterial("JDM12989/replicators/block_tex");	-- work around for bad textures
 end

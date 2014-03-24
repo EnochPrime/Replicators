@@ -35,26 +35,31 @@ function ENT:Rep_AI_GoToTarget(target, performAction)
 	local self_posn = self:GetPos();
 	local target_posn = target:GetPos();
 
+	-- perform action
+	if ((target_posn - self_posn):Length() <= 50 and performAction) then
+		self:Activity(target);
+	end
+
+	-- target no longer valid
+	if (target == nil or not IsValid(target)) then
+		return false;
+	end
+
 	-- set target
 	MsgN("Replicator:" .. self:EntIndex() .. " set target to " .. target:GetClass() .. ":" .. target:EntIndex());	
 	self:SetTarget(target);
 	
 	-- create schedule
 	local schd = ai_schedule.New();
+	schd:EngTask("TASK_SET_ROUTE_SEARCH_TIME", 1);		-- need this to stop search for path to invalid target
 	schd:EngTask("TASK_GET_PATH_TO_TARGET", 0);
 	schd:EngTask("TASK_FACE_PATH", 0);
-	schd:EngTask("TASK_RUN_PATH_WITHIN_DIST", 10);
-	schd:EngTask("TASK_WAIT_FOR_MOVEMENT", 0);
+	schd:EngTask("TASK_MOVE_TO_TARGET_RANGE", 10);
+	schd:EngTask("TASK_WAIT_FOR_MOVEMENT_STEP", 0);
 	
 	if (performAction) then
-		schd:EngTask("TASK_MELEE_ATTACK1", 0);
+		--schd:EngTask("TASK_MELEE_ATTACK1", 0);
 	end
-
-	-- if close to target, perform action
---	local dist = (self_posn - target_posn):Length();
---	if (dist <= 50 and performAction) then
---		self:Activity(target);
---	end
 	
 	-- start schedule
 	MsgN("Replicator:" .. self:EntIndex() .. " is going to " .. target:GetClass() .. ":" .. target:EntIndex()); 

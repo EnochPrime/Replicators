@@ -21,14 +21,6 @@ AddCSLuaFile("cl_init.lua");
 AddCSLuaFile("shared.lua");
 include("shared.lua");
 
-	local schd = ai_schedule.New("Rep_Wander");
---	schd:EngTask("TASK_GET_PATH_TO_LASTPOSITION",0);
-	schd:EngTask("TASK_GET_PATH_TO_RANDOM_NODE",128);
-	schd:EngTask("TASK_FACE_PATH",0);
-	schd:EngTask("TASK_RUN_PATH",0);
-	schd:EngTask("TASK_WAIT_FOR_MOVEMENT",0);
-	schd:EngTask("TASK_STOP_MOVING",0);
-
 --############### SENT CODE ###############
 ENT.CDSIgnore = true;
 function ENT:gcbt_breakactions() end; ENT.hasdamagecase = true;
@@ -42,7 +34,7 @@ function ENT:Initialize()
 	self:SetSolid(SOLID_BBOX);
 	self:SetHullType(self.Hull);
 	self:SetHullSizeNormal();
-	self:CapabilitiesAdd(CAP_MOVE_GROUND);
+	self:CapabilitiesAdd(CAP_MOVE_GROUND or CAP_INNATE_MELEE_ATTACK1);
 	self:SetMaxYawSpeed(5000);
 	self:SetNWInt("Health",self.Max_Health);
 	Replicators.Add(self);

@@ -17,15 +17,18 @@
 */
 
 function ENT:Rep_AI_Replicate()
-	if (table.Count(Replicators.Reps) >= GetConVarNumber("replicator_limit")) then return end;
-	
-	if (self.material_metal >= 1000) then
+	local replicator_limit = GetConVarNumber("replicator_limit");
+	local replicator_max_material = GetConVarNumber("replicator_max_material");
+
+	-- spawn new replicator (queen not available)
+	if (table.Count(Replicators.Reps) >= GetConVarNumber("replicator_limit") and 
+			self.material_metal >= 1000) then
 		--spawn new rep
 		local pos = self:GetPos() + (self:GetForward() * 60);
 		local rep = ents.Create("rep_n");
 		rep:SetPos(pos);
 		rep:Spawn();
-		--rep:SetMaterial("materials/JDM12989/Replicators/Block_Gray.vmt");
+		--rep:SetMaterial("materials/JDM12989/replicators/Block_Gray.vmt");
 		rep.leader = self;
 		self.minions[rep.ENTINDEX] = rep;
 		self.material_metal = self.material_metal - 1000;

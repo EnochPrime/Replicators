@@ -9,6 +9,7 @@ function ENT:Rep_AI_Wander(radius,min_wait,max_wait)
 	schd:EngTask("TASK_GET_PATH_TO_RANDOM_NODE",radius);
 	schd:EngTask("TASK_FACE_PATH",0);
 	schd:EngTask("TASK_RUN_PATH",0);
+--	schd:EngTask("TASK_WANDER", radius);
 	schd:EngTask("TASK_WAIT_FOR_MOVEMENT",0);
 	schd:EngTask("TASK_WAIT",math.random(min_wait,max_wait));
 	
