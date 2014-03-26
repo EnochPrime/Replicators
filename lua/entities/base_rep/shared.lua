@@ -1,5 +1,5 @@
-ENT.Type = "ai"
-ENT.Base = "base_ai"
+--ENT.Type = "ai"
+ENT.Base = "base_nextbot"
 ENT.PrintName = "Replicator Base Code"
 ENT.Author = "JDM12989"
 

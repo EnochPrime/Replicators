@@ -32,17 +32,13 @@ function ENT:Initialize()
 	self:PhysicsInit(SOLID_VPHYSICS);
 	self:SetMoveType(MOVETYPE_STEP);
 	self:SetSolid(SOLID_BBOX);
-	self:SetHullType(self.Hull);
-	self:SetHullSizeNormal();
-	self:CapabilitiesAdd(CAP_MOVE_GROUND or CAP_INNATE_MELEE_ATTACK1);
-	self:SetMaxYawSpeed(5000);
 	self:SetNWInt("Health",self.Max_Health);
 	Replicators.Add(self);
 	
 	-- INTELLIGENCE
 	self.ai = self:GetClass()..".lua";
 	self.code = {};
-	self:SetCode(self.ai);
+	--self:SetCode(self.ai);
 	self.freeze = false;
 	
 	-- GROUPING
@@ -113,23 +109,39 @@ function ENT:SetCode(code)
 	self:SetSchedule(SCHED_NONE);
 end
 
---################# Select Schedule @JDM12989
-function ENT:SelectSchedule()	
-	MsgN("Replicator:" .. self:EntIndex() .. " selecting schedule...");	
-	-- if enemy exists attack
-	if (!self:Rep_AI_Attack()) then
-		-- if there is nothing to gather, wander around	
-		if (!self:Rep_AI_Replicate()) then
-			self:Rep_AI_Wander();
+--################# Update Behavior @JDM12989
+function ENT:BehaveUpdate()
+	if (!self.BehaveThread) then return end
+
+--	MsgN("update behavior?");
+	if (self:GetTarget() and self:GetTarget():IsValid() and self:GetRangeTo(self:GetTarget()) <= 20) then
+		self:Activity(self:GetTarget());
+	end
+
+	local ok, message = coroutine.resume(self.BehaveThread);
+	if (ok == false) then
+		self.BehaveThread = nil
+		Msg(self, "error: ", message, "\n");
+	end
+end
+
+--################# AI Main Loop @JDM12989
+function ENT:RunBehaviour()
+	while (true) do
+--		MsgN("run behavior");	
+		
+		-- set default speed		
+		self.loco:SetDesiredSpeed(50);
+
+		-- replicate!
+		self:Rep_Replicate();
+
+		-- always get resources
+		if (self:FindResources()) then
+			self:Rep_MoveToTarget();
+		-- if no tasks then wander
+		else
+			self:Rep_Wander();
 		end
 	end
---	self.tasks = false;
---	local i = 1;
---	while (not self.tasks and i < #self.code) do
---		if (self.freeze) then return end;
---		local s = self.code[i];
---		MsgN("Running Str: "..s);
---		RunString(s);
---		i = i + 1;
---	end
 end

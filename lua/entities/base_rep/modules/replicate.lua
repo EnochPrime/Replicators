@@ -1,5 +1,5 @@
 /*
-	Replicator AI Function, Replicate for GarrysMod
+	Replicator NextBot Function, Replicate for GarrysMod
 	Copyright (C) 2014
 
 	This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,10 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-function ENT:Rep_AI_Replicate()
+--################### REPLICATE ####################--
+--# Description: Creates a new replicator				#--
+--##################################################--
+function ENT:Rep_Replicate()
 	local replicator_limit = GetConVarNumber("replicator_limit");
 	local replicator_repn_required_material = GetConVarNumber("replicator_repn_required_material");
 
@@ -33,11 +36,4 @@ function ENT:Rep_AI_Replicate()
 		self.minions[rep:EntIndex()] = rep;
 		self.material_metal = self.material_metal - replicator_repn_required_material;
 	end	
-
-	-- link to gather schedule
-	return self:Rep_AI_Gather();
 end
-
-local Data = {};
-
---Replicators.RegisterVGUI("Replicate",Data);

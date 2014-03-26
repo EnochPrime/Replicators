@@ -46,6 +46,37 @@ function ENT:Rep_AI_Gather(max_num)
 	return self:Rep_AI_GoToTarget(target, true);
 end
 
+function ENT:FindResources()
+	local target = self:Find("prop_physics");
+	if (target != nil and IsValid(target)) then
+		self:SetTarget(target);
+		return true;
+	end
+	
+	self:SetTarget(nil);	
+	return false;
+end
+
+function ENT:Rep_GatherResource()
+	-- collect resources
+	if (!self:GetTarget()._repResourceRemaining) then
+		self:GetTarget()._repResourceRemaining = self:GetTarget():GetPhysicsObject():GetMass();
+	else
+		if (self:GetTarget()._repResourceRemaining > 0) then		
+			self:GetTarget()._repResourceRemaining = self:GetTarget()._repResourceRemaining - 1;
+			self.material_metal = self.material_metal + 10;
+		end
+	end
+
+	-- play eat animation and wait until completion
+	--self:PlaySequenceAndWait("eat", 1);	
+	coroutine.wait(2);	-- add pause since there is no animation yet
+
+	if (self:GetTarget().repResourceRemaining <= 0) then
+		self:GetTarget():Remove();
+	end
+end
+
 local Data = {
 	"Set amount to gather.",
 	"numbers",

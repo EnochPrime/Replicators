@@ -102,6 +102,14 @@ function ENT:Find(class_name)
 	return e;
 end
 
+-- get/set target
+function ENT:SetTarget(target)
+	self.Target = target;
+end
+function ENT:GetTarget()
+	return self.Target;
+end
+
 -- return whether or not ent can be targeted
 function Help.Can_Target(s,e)
 	if (not e.__rep_count) then e.__rep_count = {} end;
