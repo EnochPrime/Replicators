@@ -88,7 +88,7 @@ function ENT:Find(class_name)
 		local color = v:GetColor();
 		-- if entity is of correct class, not invisible, and is not in ignore list
 		if (v:GetClass() == class_name and color.a == 255 and not table.HasValue(Replicators.IgnoreMe,v:GetModel())) then
-			-- if entity can be targeted		
+			-- if entity can be targeted					
 			if (self:Visible(v) and Help.Can_Target(self,v)) then				
 				dist = (pos - v:GetPos()):Length();
 				if (dist < d) then

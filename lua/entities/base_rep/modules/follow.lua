@@ -51,7 +51,8 @@ function ENT:Rep_AI_GoToTarget(target, performAction)
 	
 	-- create schedule
 	local schd = ai_schedule.New();
-	schd:EngTask("TASK_SET_ROUTE_SEARCH_TIME", 1);		-- need this to stop search for path to invalid target
+	schd:EngTask("TASK_SET_FAIL_SCHEDULE", SCHED_NONE);
+	schd:EngTask("TASK_SET_ROUTE_SEARCH_TIME", 1);			-- need this to stop search for path to invalid target
 	schd:EngTask("TASK_GET_PATH_TO_TARGET", 0);
 	schd:EngTask("TASK_FACE_PATH", 0);
 	schd:EngTask("TASK_MOVE_TO_TARGET_RANGE", 10);

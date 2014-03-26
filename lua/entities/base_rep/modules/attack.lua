@@ -19,10 +19,13 @@ end
 -- return false	no ent to attack
 function ENT:Rep_AI_Attack(e)
 	e = e or self:AttackWho();
-	if (IsValid(e)) then
-		self.attack = e;
-		self:Rep_AI_Follow(self.attack,true);
+	if (e == nil or not IsValid(e)) then
+		MsgN("Replicator:" .. self:EntIndex() .. " has no enemies.");
+		return false;
 	end
+
+	self.attack = e;
+	return self:Rep_AI_Follow(self.attack, true);
 end
 
 local Data = {

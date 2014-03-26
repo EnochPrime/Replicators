@@ -33,6 +33,7 @@ function ENT:Initialize()
 	self:SetMoveType(MOVETYPE_VPHYSICS);
 	self:SetCollisionGroup(COLLISION_GROUP_WORLD);
 	self:DrawShadow(false);
+	self:SetMaterial("JDM12989/replicators/block_tex");	-- work around for bad textures
 	
 	self.dead = true;
 	self.timer_running = true;

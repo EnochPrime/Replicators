@@ -86,12 +86,14 @@ function ENT:OnTakeDamage(dmg)
 			gib:SetAngles(self:GetAngles());
 			gib:Spawn();
 			gib:SetModel(str..i..".mdl");
+			gib:SetMaterial("JDM12989/replicators/block_tex");	-- work around for bad textures
 			gib:PhysicsInit(SOLID_VPHYSICS);
 			gib:GetPhysicsObject():Wake();
 			gib.dead = true;
 			gib:OnRemove();
 		end
 	end
+	self:SelectSchedule();
 end
 
 --############### Allows the code to be changed @JDM12989
@@ -113,7 +115,14 @@ end
 
 --################# Select Schedule @JDM12989
 function ENT:SelectSchedule()	
-	self:Rep_AI_Replicate();
+	MsgN("Replicator:" .. self:EntIndex() .. " selecting schedule...");	
+	-- if enemy exists attack
+	if (!self:Rep_AI_Attack()) then
+		-- if there is nothing to gather, wander around	
+		if (!self:Rep_AI_Replicate()) then
+			self:Rep_AI_Wander();
+		end
+	end
 --	self.tasks = false;
 --	local i = 1;
 --	while (not self.tasks and i < #self.code) do

@@ -18,27 +18,24 @@
 
 function ENT:Rep_AI_Replicate()
 	local replicator_limit = GetConVarNumber("replicator_limit");
-	local replicator_max_material = GetConVarNumber("replicator_max_material");
+	local replicator_repn_required_material = GetConVarNumber("replicator_repn_required_material");
 
 	-- spawn new replicator (queen not available)
-	if (table.Count(Replicators.Reps) >= GetConVarNumber("replicator_limit") and 
-			self.material_metal >= 1000) then
+	if (table.Count(Replicators.Reps) < replicator_limit and
+			self.material_metal >= replicator_repn_required_material) then
+
 		--spawn new rep
 		local pos = self:GetPos() + (self:GetForward() * 60);
 		local rep = ents.Create("rep_n");
 		rep:SetPos(pos);
 		rep:Spawn();
-		--rep:SetMaterial("materials/JDM12989/replicators/Block_Gray.vmt");
 		rep.leader = self;
-		self.minions[rep.ENTINDEX] = rep;
-		self.material_metal = self.material_metal - 1000;
+		self.minions[rep:EntIndex()] = rep;
+		self.material_metal = self.material_metal - replicator_repn_required_material;
 	end	
 
-	-- determine which schedule to run
-	-- if there is nothing to gather, wander around
-	if (not self:Rep_AI_Gather(1000)) then
-		self:Rep_AI_Wander();
-	end
+	-- link to gather schedule
+	return self:Rep_AI_Gather();
 end
 
 local Data = {};

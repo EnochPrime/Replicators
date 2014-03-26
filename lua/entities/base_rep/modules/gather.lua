@@ -28,15 +28,18 @@
 --#   false: when no taget exists						#--
 --##################################################--
 function ENT:Rep_AI_Gather(max_num)
-	max_num = max_num or self.material_max;
+	local replicator_max_material = GetConVarNumber("replicator_max_material_carry");	
+	max_num = max_num or replicator_max_material;
 	
 	local target = nil;
 	-- are we carring the maximum resources?	
 	if (self.material_metal + self.material_other >= max_num) then
 		-- bring materials back to queen
+		--MsgN("Replicator:" .. self:EntIndex() .. " looking for queen.");
 		target = self:Find("rep_q");
 	else
 		-- find more resources
+		--MsgN("Replicator:" .. self:EntIndex() .. " looking for resources.");
 		target = self:Find("prop_physics");
 	end
 

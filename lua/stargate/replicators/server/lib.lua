@@ -6,13 +6,13 @@ Replicators.HasSG = #file.Find("autorun/stargate.lua","LUA") == 1;
 
 Replicators.Reps = {};
 -- maximum number of replicators that can be present
-CreateConVar("replicator_limit", 25, FCVAR_ARCHIVE);
+CreateConVar("replicator_limit", "25", FCVAR_ARCHIVE);
 -- number of replicators which can target entity
-CreateConVar("replicator_limit_bunch", 5, FCVAR_ARCHIVE);
+CreateConVar("replicator_limit_bunch", "5", FCVAR_ARCHIVE);
 -- number of resources a replicator can carry
-CreateConVar("replicator_max_material_carry", 1000, FCVAR_ARCHIVE);
+CreateConVar("replicator_max_material_carry", "1000", FCVAR_ARCHIVE);
 -- number of resources to create a repn
-CreateConVar("replicator_repn_required_material", 1000, FCVAR_ARCHIVE);
+CreateConVar("replicator_repn_required_material", "1000", FCVAR_ARCHIVE);
 
 Replicators.Enemies = {};
 Replicators.Human_Number = 1;	-- humanform number
@@ -25,8 +25,8 @@ Replicators.RequiredNumber["rep_q"] = 50;
 -- ARG variables
 Replicators.Immunities = {};
 Replicators.FreqLog = {};
-CreateConVar("replicator_arg_immunity_disable", 0, FCVAR_ARCHIVE);
-CreateConVar("replicator_arg_immunity_after", 5, FCVAR_ARCHIVE);
+--CreateConVar("replicator_arg_immunity_disable", "0", FCVAR_ARCHIVE);
+--CreateConVar("replicator_arg_immunity_after", "5", FCVAR_ARCHIVE);
 
 -- model ignore lists
 Replicators.IgnoreMe = {
@@ -58,10 +58,14 @@ end
 
 --################# Add Attacker @JDM12989
 function Replicators.AddEnemy(p)
-	if (#Replicators.Enemies > 0 and not table.HasValue(Replicators.Enemies,p)) then
-		table.insert(Replicators.Enemies,p);
+	if (#Replicators.Enemies <= 0) then
+		table.ForceInsert(Replicators.Enemies, p);
+		MsgN(p:GetClass() .. ":" .. p:EntIndex() .. " is now a Replicator enemy.");
 	else
-		table.ForceInsert(Replicators.Enemies,p);
+		if (!table.HasValue(Replicators.Enemies, p)) then
+			table.insert(Replicators.Enemies, p);
+			MsgN(p:GetClass() .. ":" .. p:EntIndex() .. " is now a Replicator enemy.");
+		end
 	end
 end
 
@@ -69,7 +73,9 @@ end
 function Replicators.RemoveEnemy(p)
 	for k,v in pairs(Replicators.Enemies) do
 		if (v == p) then
-			table.remove(Replicators.Enemies,k);
+			table.remove(Replicators.Enemies, k);
+			MsgN(p:GetClass() .. ":" .. p:EntIndex() .. " is no longer a Replicator enemy.");
+			break;
 		end
 	end
 end
