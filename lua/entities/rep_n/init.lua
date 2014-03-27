@@ -9,5 +9,8 @@ include("shared.lua");
 function ENT:Initialize()
 	self.BaseClass.Initialize(self);
 	self.leader = self:Find("rep_q");	-- default leader to nearest queen
-	self:SetMaterial("JDM12989/replicators/block_tex");	-- work around for bad textures
+	self:SetMaterial("JDM12989/block_tex");	-- work around for bad textures
+	self:SetMaterial("phoenix_storms/metalfloor_2-3");
+	self:SetCollisionBounds(Vector(-4, -4, 0), Vector(4, 4, 64));
+	self:SetHealth(25);
 end

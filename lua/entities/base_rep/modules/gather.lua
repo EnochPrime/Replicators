@@ -1,5 +1,5 @@
-/*
-	Replicator AI Function, Gather for GarrysMod
+--[[
+	Replicator Module, Gather for GarrysMod
 	Copyright (C) 2014
 
 	This program is free software: you can redistribute it and/or modify
@@ -13,42 +13,13 @@
 	GNU General Public License for more details.
 
 	You should have received a copy of the GNU General Public License
-	along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+	along with this program.  If not, see <http:--www.gnu.org/licenses/>.
+]]
 
---##################### GATHER #####################--
---# Description: Goes after and gathers materials  #--
---#																#--
---# Arguments:													#--
---#   max_num: maximum number of resources to		#--
---#     gather before returning to queen				#--
---#																#--
---# Returns:													#--
---#   true: moving toward target							#--
---#   false: when no taget exists						#--
---##################################################--
-function ENT:Rep_AI_Gather(max_num)
-	local replicator_max_material = GetConVarNumber("replicator_max_material_carry");	
-	max_num = max_num or replicator_max_material;
-	
-	local target = nil;
-	-- are we carring the maximum resources?	
-	if (self.material_metal + self.material_other >= max_num) then
-		-- bring materials back to queen
-		--MsgN("Replicator:" .. self:EntIndex() .. " looking for queen.");
-		target = self:Find("rep_q");
-	else
-		-- find more resources
-		--MsgN("Replicator:" .. self:EntIndex() .. " looking for resources.");
-		target = self:Find("prop_physics");
-	end
-
-	return self:Rep_AI_GoToTarget(target, true);
-end
-
-function ENT:FindResources()
+-- finds closest 'prop_physics' entity and sets as target
+function ENT:Rep_FindResources()
 	local target = self:Find("prop_physics");
-	if (target != nil and IsValid(target)) then
+	if (target and target:IsValid()) then
 		self:SetTarget(target);
 		return true;
 	end
@@ -57,29 +28,35 @@ function ENT:FindResources()
 	return false;
 end
 
+-- collects resources from target and performs animation
 function ENT:Rep_GatherResource()
-	-- collect resources
+	-- setup entity maximum resources
 	if (!self:GetTarget()._repResourceRemaining) then
 		self:GetTarget()._repResourceRemaining = self:GetTarget():GetPhysicsObject():GetMass();
-	else
-		if (self:GetTarget()._repResourceRemaining > 0) then		
-			self:GetTarget()._repResourceRemaining = self:GetTarget()._repResourceRemaining - 1;
-			self.material_metal = self.material_metal + 10;
-		end
+	end
+
+	-- collect resources
+	if (self:GetTarget()._repResourceRemaining > 0) then		
+		self:GetTarget()._repResourceRemaining = self:GetTarget()._repResourceRemaining - 1;
+		self.material_metal = self.material_metal + 10;
 	end
 
 	-- play eat animation and wait until completion
+	self.loco:FaceTowards(self:GetTarget():GetPos());	
 	--self:PlaySequenceAndWait("eat", 1);	
-	coroutine.wait(2);	-- add pause since there is no animation yet
+	coroutine.wait(1);	-- add pause since there is no animation yet
 
-	if (self:GetTarget().repResourceRemaining <= 0) then
+	-- remove entity if all resources consumed
+	if (self:GetTarget() and self:GetTarget():IsValid() and self:GetTarget()._repResourceRemaining <= 0) then
 		self:GetTarget():Remove();
 	end
 end
 
-local Data = {
-	"Set amount to gather.",
-	"numbers",
-};
+-- returns true when resources are nearby
+function ENT:Rep_ResourcesAvailable()
+	if (self:GetTarget() and self:GetTarget():IsValid()) then
+	 	return true;
+	end
 
-Replicators.RegisterVGUI("Gather",Data);
+	return self:Rep_FindResources();
+end

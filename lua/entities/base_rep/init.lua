@@ -1,4 +1,4 @@
-/*
+--[[
 	Replicator Basecode for GarrysMod
 	Copyright (C) 2014
 
@@ -14,7 +14,7 @@
 
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+]]
 
 --############## HEADER ###############
 AddCSLuaFile("cl_init.lua");
@@ -29,10 +29,10 @@ function ENT:gcbt_breakactions() end; ENT.hasdamagecase = true;
 function ENT:Initialize()
 	self.ENTINDEX = self:EntIndex();
 	self:SetModel(self.Model);
-	self:PhysicsInit(SOLID_VPHYSICS);
-	self:SetMoveType(MOVETYPE_STEP);
-	self:SetSolid(SOLID_BBOX);
-	self:SetNWInt("Health",self.Max_Health);
+--	self:PhysicsInit(SOLID_VPHYSICS);
+--	self:SetMoveType(MOVETYPE_STEP);
+--	self:SetSolid(SOLID_BBOX);
+--	self:SetNWInt("Health",self.Max_Health);
 	Replicators.Add(self);
 	
 	-- INTELLIGENCE
@@ -59,37 +59,18 @@ function ENT:Initialize()
 	end
 end
 
---############### On Take Damage @JDM12989
-function ENT:OnTakeDamage(dmg)
-	local att = dmg:GetAttacker();
-	local dam = dmg:GetDamage();
-	Replicators.AddEnemy(att);
-	local health = self:GetNWInt("Health");
-	self:SetNWInt("Health",math.Clamp(health-dam,0,self.Max_Health));
-	if (self:GetNWInt("Health") == 0) then
-		-- remove from lists
-		Replicators.Remove(self);
-		if (self.leader and IsValid(self.leader)) then
-			table.remove(self.leader.minions,self.ENTINDEX);
-		end
-		self:Remove();
-		--fall apart
-		-- MAKE THEM WORK THE CORRECT WAY!!!
-		local str = "models/JDM12989/Replicators/Rep_N/Gibs/";
-		for i=1,19 do
-			local gib = ents.Create("block");
-			gib:SetPos(self:GetPos());
-			gib:SetAngles(self:GetAngles());
-			gib:Spawn();
-			gib:SetModel(str..i..".mdl");
-			gib:SetMaterial("JDM12989/replicators/block_tex");	-- work around for bad textures
-			gib:PhysicsInit(SOLID_VPHYSICS);
-			gib:GetPhysicsObject():Wake();
-			gib.dead = true;
-			gib:OnRemove();
-		end
+-- OnInjured @jdm12989
+function ENT:OnInjured(info)
+	Replicators.AddEnemy(info:GetAttacker());
+end
+
+-- OnKilled @jdm12989
+function ENT:OnKilled(info)
+	Replicators.Remove(self);
+	if (self.leader and self.leader:IsValid()) then
+		table.remove(self.leader.minions, self:EntIndex());
 	end
-	self:SelectSchedule();
+	self:Remove();
 end
 
 --############### Allows the code to be changed @JDM12989
@@ -109,14 +90,20 @@ function ENT:SetCode(code)
 	self:SetSchedule(SCHED_NONE);
 end
 
---################# Update Behavior @JDM12989
+-- BehaveUpdate @JDM12989
 function ENT:BehaveUpdate()
 	if (!self.BehaveThread) then return end
 
---	MsgN("update behavior?");
-	if (self:GetTarget() and self:GetTarget():IsValid() and self:GetRangeTo(self:GetTarget()) <= 20) then
-		self:Activity(self:GetTarget());
-	end
+	--	MsgN("update behavior?");
+	--[[ update logic gains based on scenario?
+		multiple or aggressive enemies weights toward attack or flee depending on number of replicators
+		less replicators weights toward more resource gathering
+		smarter logic on certain number thresholds
+		I.e. low amount is gather and replicate
+		then start fleeing from attackers and defending hive
+		then actively seek out aggressive attackers
+		build structures / weapons? 
+	]]
 
 	local ok, message = coroutine.resume(self.BehaveThread);
 	if (ok == false) then
@@ -131,17 +118,27 @@ function ENT:RunBehaviour()
 --		MsgN("run behavior");	
 		
 		-- set default speed		
-		self.loco:SetDesiredSpeed(50);
+		self.loco:SetDesiredSpeed(65);
 
 		-- replicate!
 		self:Rep_Replicate();
 
 		-- always get resources
-		if (self:FindResources()) then
-			self:Rep_MoveToTarget();
+		if (self:Rep_ResourcesAvailable()) then
+			if (self:GetRangeTo(self:GetTarget()) <= 40) then
+	 	 	 	self:Rep_GatherResource();
+			else
+				self:Rep_MoveToTarget();
+			end
 		-- if no tasks then wander
 		else
 			self:Rep_Wander();
 		end
 	end
+end
+
+-- HandleStuck @jdm12989
+function ENT:HandleStuck()
+	--MsgN("stuck!");
+	self.loco:ClearStuck();
 end

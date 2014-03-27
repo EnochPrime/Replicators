@@ -1,5 +1,5 @@
-/*
-	Replicator NextBot Functions, Movement for GarrysMod
+--[[
+	Replicator Module, Movement for GarrysMod
 	Copyright (C) 2014
 
 	This program is free software: you can redistribute it and/or modify
@@ -13,25 +13,27 @@
 	GNU General Public License for more details.
 
 	You should have received a copy of the GNU General Public License
-	along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+	along with this program.  If not, see <http:--www.gnu.org/licenses/>.
+]]
 
---################# MOVE TO TARGET #################--
---# Description: Move to target entity					#--
---#																#--
---# Arguments:													#--
---#   options: move to target options					#--
---##################################################--
+--[[ Rep_MoveToTarget @jdm12989
+	Description:
+		Move to target entity.
+
+	Options:
+		opt1
+]]
 function ENT:Rep_MoveToTarget(options)
 	local options = options or {};
 
 	local path = Path("Follow");
 	path:SetMinLookAheadDistance(options.lookahead or 300);
-	path:SetGoalTolerance(options.tolerance or 20);
+	path:SetGoalTolerance(options.tolerance or 40);
 	path:Compute(self, self:GetTarget():GetPos());
 
 	if (!path:IsValid()) then return "failed" end
 
+	-- start run animation
 	self:StartActivity(ACT_RUN);
 
 	-- keep updating path to target
@@ -41,8 +43,10 @@ function ENT:Rep_MoveToTarget(options)
 		end
 		path:Update(self);
 
+		-- draw the path
 		if (options.draw) then path:Draw(); end
 		
+		-- handle stuck
 		if (self.loco:IsStuck()) then
 			self:HandleStuck();
 			return "stuck";
@@ -51,26 +55,29 @@ function ENT:Rep_MoveToTarget(options)
 		coroutine.yield();
 	end
 
+	-- start idle animation
 	self:StartActivity(ACT_IDLE);
 	return "ok";
 end
 
---##################### WANDER #####################--
---# Description: Wanders to random location			#--
---#																#--
---# Arguments:													#--
---#     radius: maximum distance to wander			#--
---#   min_wait: minimum idle time						#--
---#   max_wait: maximum idle time						#--
---##################################################--
-function ENT:Rep_Wander(radius, min_wait, max_wait)
-	radius = radius or 1000;
-	min_wait = min_wait or 0;
-	max_wait = max_wait or 5;
+--[[ Rep_Wander @jdm12989
+	Description:
+		Wanders to random location and idles for a random amount of time.
+
+	Options:
+		maxDistance: farthest distance from current location
+		minWait: shortest amount of time to idle in seconds
+		maxWait: longest amount of time to wait in seconds
+]]
+function ENT:Rep_Wander(options)
+local options = options or {};	
+options.maxDistance = options.maxDistance or 1000;
+options.minWait = options.minWait or 0;
+options.maxWait = options.minWait or 5;
 
 	self:StartActivity(ACT_RUN);
 	self.loco:SetDesiredSpeed(50);
-	self:MoveToPos(self:GetPos() + Vector(math.Rand(-1, 1), math.Rand(-1, 1), 0) * math.Rand(50, radius));
+	self:MoveToPos(self:GetPos() + Vector(math.Rand(-1, 1), math.Rand(-1, 1), 0) * math.Rand(50, options.maxDistance));
 	self:StartActivity(ACT_IDLE);
-	coroutine.wait(math.Rand(min_wait, max_wait));
+	coroutine.wait(math.Rand(options.minWait, options.maxWait));
 end
