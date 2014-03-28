@@ -1,0 +1,10 @@
+{
+	"title"		:	"Replicators",
+	"type"		:	"npc",
+	"tags"		:	[ "roleplay" ],
+	"ignore"	:
+	[
+		"*.txt",
+		"*.git*"
+	]
+}
