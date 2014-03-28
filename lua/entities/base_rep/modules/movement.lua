@@ -16,13 +16,11 @@
 	along with this program.  If not, see <http:--www.gnu.org/licenses/>.
 ]]
 
---[[ Rep_MoveToTarget @jdm12989
-	Description:
-		Move to target entity.
-
-	Options:
-		opt1
-]]
+-- Rep_MoveToTarget @jdm12989
+--	Move to target entity.
+--	Options:
+--		lookahead:
+--		tolerance:
 function ENT:Rep_MoveToTarget(options)
 	local options = options or {};
 
@@ -60,24 +58,18 @@ function ENT:Rep_MoveToTarget(options)
 	return "ok";
 end
 
---[[ Rep_Wander @jdm12989
-	Description:
-		Wanders to random location and idles for a random amount of time.
-
-	Options:
-		maxDistance: farthest distance from current location
-		minWait: shortest amount of time to idle in seconds
-		maxWait: longest amount of time to wait in seconds
-]]
+-- Rep_Wander @jdm12989
+--	Wanders to random location and idles for a random amount of time.
+--	Options:
+--		maxDistance: farthest distance from current location
+--		minWait: shortest amount of time to idle in seconds
+--		maxWait: longest amount of time to wait in seconds
 function ENT:Rep_Wander(options)
-local options = options or {};	
-options.maxDistance = options.maxDistance or 1000;
-options.minWait = options.minWait or 0;
-options.maxWait = options.minWait or 5;
+	local options = options or {};
 
 	self:StartActivity(ACT_RUN);
 	self.loco:SetDesiredSpeed(50);
-	self:MoveToPos(self:GetPos() + Vector(math.Rand(-1, 1), math.Rand(-1, 1), 0) * math.Rand(50, options.maxDistance));
+	self:MoveToPos(self:GetPos() + Vector(math.Rand(-1, 1), math.Rand(-1, 1), 0) * math.Rand(50, options.maxDistance or 1000));
 	self:StartActivity(ACT_IDLE);
-	coroutine.wait(math.Rand(options.minWait, options.maxWait));
+	coroutine.wait(math.Rand(options.minWait or 0, options.maxWait or 5));
 end

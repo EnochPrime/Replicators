@@ -1,5 +1,5 @@
-/*
-	Replicator NextBot Function, Replicate for GarrysMod
+--[[
+	Replicator Module, Replicate for GarrysMod
 	Copyright (C) 2014
 
 	This program is free software: you can redistribute it and/or modify
@@ -13,19 +13,18 @@
 	GNU General Public License for more details.
 
 	You should have received a copy of the GNU General Public License
-	along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+	along with this program.  If not, see <http:--www.gnu.org/licenses/>.
+]]
 
---################### REPLICATE ####################--
---# Description: Creates a new replicator				#--
---##################################################--
+-- Rep_Replicate @jdm12989
+--	Creates a new replicator
 function ENT:Rep_Replicate()
 	local replicator_limit = GetConVarNumber("replicator_limit");
 	local replicator_repn_required_material = GetConVarNumber("replicator_repn_required_material");
 
 	-- spawn new replicator (queen not available)
 	if (table.Count(Replicators.Reps) < replicator_limit and
-			self.material_metal >= replicator_repn_required_material) then
+			self:Rep_GetResource(self, "metal") >= replicator_repn_required_material) then
 
 		--spawn new rep
 		local pos = self:GetPos() + (self:GetForward() * 60);
@@ -34,7 +33,7 @@ function ENT:Rep_Replicate()
 		rep:Spawn();
 		rep.leader = self;
 		self.minions[rep:EntIndex()] = rep;
-		self.material_metal = self.material_metal - replicator_repn_required_material;
+		self:Rep_SetResource(self, "metal", self:Rep_GetResource("metal") - replicator_repn_required_material);
 	end	
 end
 

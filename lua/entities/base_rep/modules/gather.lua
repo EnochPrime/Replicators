@@ -16,7 +16,8 @@
 	along with this program.  If not, see <http:--www.gnu.org/licenses/>.
 ]]
 
--- finds closest 'prop_physics' entity and sets as target
+-- Rep_FindResources @jdm12989
+-- Finds closest 'prop_physics' entity and sets as target
 function ENT:Rep_FindResources()
 	local target = self:Find("prop_physics");
 	if (target and target:IsValid()) then
@@ -28,18 +29,18 @@ function ENT:Rep_FindResources()
 	return false;
 end
 
--- collects resources from target and performs animation
+-- Rep_GatherResource @jdm12989
+-- Collects resources from target and performs animation
 function ENT:Rep_GatherResource()
 	-- setup entity maximum resources
-	if (!self:GetTarget()._repResourceRemaining) then
-		self:GetTarget()._repResourceRemaining = self:GetTarget():GetPhysicsObject():GetMass();
+	if (self:GetTarget() and self:GetTarget():IsValid()) then
+		self:Rep_SetupResources(self:GetTarget(), { 10 * self:GetTarget():GetPhysicsObject():GetMass(), 0 });
+	else
+		coroutine.yield();
 	end
 
 	-- collect resources
-	if (self:GetTarget()._repResourceRemaining > 0) then		
-		self:GetTarget()._repResourceRemaining = self:GetTarget()._repResourceRemaining - 1;
-		self.material_metal = self.material_metal + 10;
-	end
+	self:Rep_Transfer("metal", 10, self:GetTarget());	
 
 	-- play eat animation and wait until completion
 	self.loco:FaceTowards(self:GetTarget():GetPos());	
@@ -47,12 +48,13 @@ function ENT:Rep_GatherResource()
 	coroutine.wait(1);	-- add pause since there is no animation yet
 
 	-- remove entity if all resources consumed
-	if (self:GetTarget() and self:GetTarget():IsValid() and self:GetTarget()._repResourceRemaining <= 0) then
+	if (self:GetTarget() and self:GetTarget():IsValid() and self:Rep_GetResource(self:GetTarget(), "metal") <= 0) then
 		self:GetTarget():Remove();
 	end
 end
 
--- returns true when resources are nearby
+-- Rep_ResourcesAvailable @jdm12989
+-- Returns true when resources are nearby
 function ENT:Rep_ResourcesAvailable()
 	if (self:GetTarget() and self:GetTarget():IsValid()) then
 	 	return true;

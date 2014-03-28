@@ -16,23 +16,22 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
---############## HEADER ###############
+-- Header
 AddCSLuaFile("cl_init.lua");
 AddCSLuaFile("shared.lua");
 include("shared.lua");
 
---############### SENT CODE ###############
+-- NPC Code
 ENT.CDSIgnore = true;
 function ENT:gcbt_breakactions() end; ENT.hasdamagecase = true;
 
---############### Init @JDM12989
+-- Initialize @jdm12989
 function ENT:Initialize()
-	self.ENTINDEX = self:EntIndex();
+--	self.ENTINDEX = self:EntIndex();
 	self:SetModel(self.Model);
---	self:PhysicsInit(SOLID_VPHYSICS);
---	self:SetMoveType(MOVETYPE_STEP);
---	self:SetSolid(SOLID_BBOX);
---	self:SetNWInt("Health",self.Max_Health);
+	self:SetMaterial("replicators/block");
+	self:SetBloodColor(DONT_BLEED);
+
 	Replicators.Add(self);
 	
 	-- INTELLIGENCE
@@ -48,15 +47,7 @@ function ENT:Initialize()
 	self.tasks = false;
 	
 	-- RESOURCES
-	self.rep_energy = 100000;
-	self.material_metal = 0;
-	self.material_other = 0;
-	self.material_max = 1000;
-	
-	local phys = self:GetPhysicsObject()
-	if (phys:IsValid()) then
-		phys:Wake();
-	end
+	self:Rep_SetupResources(self, { 0, 100000 });
 end
 
 -- OnInjured @jdm12989
@@ -73,7 +64,7 @@ function ENT:OnKilled(info)
 	self:Remove();
 end
 
---############### Allows the code to be changed @JDM12989
+--[[############### Allows the code to be changed @JDM12989
 function ENT:SetCode(code)
 	local t = {};
 	local s = "";
@@ -88,7 +79,7 @@ function ENT:SetCode(code)
 	self.code = t;
 	
 	self:SetSchedule(SCHED_NONE);
-end
+end]]
 
 -- BehaveUpdate @JDM12989
 function ENT:BehaveUpdate()

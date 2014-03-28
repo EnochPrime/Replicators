@@ -1,21 +1,5 @@
 local Help = {};
 
--- does appropriate activity based on the entitiy
-function ENT:Activity(e)
-	local c = e:GetClass();
-	if (c == "rep_q") then
-		e.material_metal = e.material_metal + self.material_metal;
-		e.material_other = e.material_other + self.material_other;
-		self.material_metal = 0;
-		self.material_other = 0;
-		return;
-	end
-	
-	if (e:IsPlayer() or e:IsNPC()) then
-		e:TakeDamage(5,self);
-	end
-end
-
 -- finds the nearest object by it's class
 -- return closest ent by class
 function ENT:Find(class_name)

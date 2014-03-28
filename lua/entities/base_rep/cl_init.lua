@@ -1,19 +1,20 @@
+--[[
+	Replicator Basecode for GarrysMod
+	Copyright (C) 2014
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+]]
+
 include("shared.lua");
 language.Add("rep_n","Replicator");
-
--- SOUND NOT WORKING!!!
---################# Think (From StaffWeapon flyby code) @aVoN
-function ENT:Think()
-	if ((self.Last or 0)+0.6 <= CurTime()) then
-		local v = self:GetVelocity();
-		local v_len = v:Length();
-		local d = (LocalPlayer():GetPos()-self:GetPos());
-		local d_len = d:Length();
-		if (d_len <= 700) then
-			self.Last = CurTime();
-			-- Vector math: Get the distance from the player orthogonally to the projectil's velocity vector
-			local intensity = math.sqrt(1-(d:DotProduct(v)/(d_len*v_len))^2)*d_len;
-			self.Entity:EmitSound(Sound("Replicators/walk.mp3"),100*(1-intensity/2500),math.random(80,120));
-		end
-	end
-end
