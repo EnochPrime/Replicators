@@ -2,6 +2,7 @@
 	[upd] changed from snpc to nextbot
 	[rem] cleaned up base code modules
 	[rem] cleaned up broken or unneeded files
+	[upd] complied with lowercase folder & files
 
 ### Rev.001 (21.01.2013)
 	[add] initial commit that works with the new gmod
