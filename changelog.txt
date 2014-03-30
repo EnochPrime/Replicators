@@ -2,7 +2,7 @@
 	[rem] cleaned up unneeded files
 	[add] added more legal text and comments
 	[add] added resource module
-*	[add] addedreplicator queen
+*	[add] added replicator queen
 *	[upd] updated attack module, not in use
 	[upd] moved runbehaviour from base to individual ents
 	[fix] stops reps from bleeding

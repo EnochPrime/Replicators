@@ -22,9 +22,13 @@ function ENT:Rep_Replicate()
 	local replicator_limit = GetConVarNumber("replicator_limit");
 	local repn_required_material = GetConVarNumber("replicator_repn_required_material");
 
-	-- spawn new replicator (queen not available)
+	-- spawn new replicator
 	if (table.Count(ents.FindByClass("rep_n")) < replicator_limit and
-			self:Rep_GetResource(self, "metal") >= repn_required_material) then
+			Replicators.Resources.Get(self, "metal") >= repn_required_material) then
+
+		-- play replicator create animation
+		--self:PlaySequenceAndWait("create", 1);
+		coroutine.wait(1);		-- wait because no animation exists
 
 		--spawn new rep
 		local pos = self:GetPos() + (self:GetForward() * 60);
@@ -33,7 +37,7 @@ function ENT:Rep_Replicate()
 		rep:Spawn();
 		rep.leader = self;
 		self.minions[rep:EntIndex()] = rep;
-		self:Rep_SetResource(self, "metal", self:Rep_GetResource("metal") - repn_required_material);
+		Replicators.Resources.Consume(self, "metal", repn_required_material);
 	end	
 end
 
@@ -51,6 +55,8 @@ function ENT:Rep_MakeQueen()
 			Replicators.Resources.Consume(self, "metal", repq_required_material);			
 
 			-- play upgrade animation
+			--self:PlaySequenceAndWait("upgrade", 1);
+			coroutine.wait(1);		-- wait because no animation exists
 
 			-- create the queen
 			local e = ents.Create("rep_q");
@@ -59,8 +65,8 @@ function ENT:Rep_MakeQueen()
 			e:Spawn();
 
 			-- transfer resources to self
-			Replicators.Resources.Transfer(self, e, "metal", Replicators.GetResource(self, "metal"));
-			Replicators.Resources.Transfer(self, e, "energy", Replicators.GetResource(self, "energy"));
+			Replicators.Resources.Transfer(self, e, "metal", Replicators.Resources.Get(self, "metal"));
+			Replicators.Resources.Transfer(self, e, "energy", Replicators.Resources.Get(self, "energy"));
 
 			-- remove old self
 			self:Remove();

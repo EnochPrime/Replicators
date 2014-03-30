@@ -45,6 +45,7 @@ function ENT:Initialize()
 
 	self.rep_defaultMetal = 0;
 	self.rep_defaultEnergy = 1000000;
+	Replicators.Resources.Initialize(self);
 end
 
 -- OnInjured @jdm12989

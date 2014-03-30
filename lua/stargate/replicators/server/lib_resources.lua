@@ -29,16 +29,21 @@ function Replicators.Resources.Initialize(ent)
 	-- return if found or initialze for prop_physics?
 
 	-- initialze default system
-	if (ent and ent:IsValid() and table.HasValue(Replicators.Resource.ValidClasses, ent:GetClass())) then
+	if (ent and ent:IsValid() and ent.rep_resource) then return true; end
+	if (ent and ent:IsValid() and table.HasValue(Replicators.Resources.ValidClasses, ent:GetClass())) then
 		ent.rep_resource = {};
-		ent.rep_resource.metal = ent.rep_defaultMetal or 0;
-		ent.rep_resource.energy = ent.rep_defaultEnergy or 0;
+		if (ent:GetClass() == "prop_physics" and ent:GetPhysicsObject() and ent:GetPhysicsObject():IsValid()) then
+			ent.rep_resource.metal = ent:GetPhysicsObject():GetMass() * 10;
+			ent.rep_resource.energy = 0;
+		else
+			ent.rep_resource.metal = ent.rep_defaultMetal or 0;
+			ent.rep_resource.energy = ent.rep_defaultMetal or 100000;
+		end
 		return true;
 	end
 
 	return false;
 end
-hook.Add("OnEntityCreated", "RepSetupResources", Replicators.Resources.Initialize);
 
 -- Resources.Consume @jdm12989
 function Replicators.Resources.Consume(ent, resType, value)
@@ -46,7 +51,7 @@ function Replicators.Resources.Consume(ent, resType, value)
 	-- use that system
 
 	-- default to replicator system
-	if (ent and ent:IsValid() and ent.rep_resource) then
+	if (ent and ent:IsValid() and Replicators.Resources.Initialize(ent)) then
 		if (resType == "metal" and ent.rep_resource.metal >= value) then
 			ent.rep_resource.metal = ent.rep_resource.metal - value;
 		elseif (resType == "energy" and ent.rep_resource.energy >= value) then
@@ -66,7 +71,7 @@ function Replicators.Resources.Get(ent, resType)
 	-- use that system
 
 	-- default to replicator system
-	if (ent and ent:IsValid() and ent.rep_resource) then
+	if (ent and ent:IsValid() and Replicators.Resources.Initialize(ent)) then
 		if (resType == "metal") then
 			return ent.rep_resource.metal;
 		elseif (resType == "energy") then
@@ -86,8 +91,8 @@ function Replicators.Resources.Transfer(source, target, resType, value)
 	-- use that system
 
 	-- default to replicator system
-	if (source and source:IsValid() and source.rep_resource) then
-		if (target and target:IsValid() and target.rep_resource) then
+	if (source and source:IsValid() and Replicators.Resources.Initialize(source)) then
+		if (target and target:IsValid() and Replicators.Resources.Initialize(target)) then
 			if (resType == "metal" and source.rep_resource.metal >= value) then
 				source.rep_resource.metal = source.rep_resource.metal - value;
 				target.rep_resource.metal = target.rep_resource.metal + value;

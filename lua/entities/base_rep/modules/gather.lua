@@ -36,7 +36,7 @@ function ENT:Rep_GatherResource()
 	if (!self:GetTarget() and !self:GetTarget():IsValid()) then coroutine.yield(); end
 
 	-- collect resources
-	Replicators.Resources.Transfer(self, self:GetTarget(), "metal", 10);
+	Replicators.Resources.Transfer(self:GetTarget(), self, "metal", 10);
 
 	-- play eat animation and wait until completion
 	self.loco:FaceTowards(self:GetTarget():GetPos());	

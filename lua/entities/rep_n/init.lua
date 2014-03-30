@@ -45,13 +45,9 @@ function ENT:RunBehaviour()
 		self.loco:SetDesiredSpeed(65);
 
 		-- if no queen exists
-		if (table.Count(ents.FindByClass("rep_q")) <= 0) then
-			MsgN("Resources: " .. Replicators.GetResource(self, "metal"));			
+		if (table.Count(ents.FindByClass("rep_q")) <= 0) then		
 			self:Rep_MakeQueen();
 		end
-
-		-- replicate!
-		--self:Rep_Replicate();
 
 		-- always get resources
 		if (self:Rep_ResourcesAvailable()) then

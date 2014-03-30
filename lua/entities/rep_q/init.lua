@@ -31,7 +31,6 @@ function ENT:Initialize()
 	self:SetModel("models/AntLion.mdl");
 	self:SetMaterial("replicators/block");
 	self:SetHealth(100);
-	self:Rep_SetupResources(self, { 1000, 100000 });
 
 	--self.max_minions = 10;
 	
