@@ -20,11 +20,11 @@
 --	Creates a new replicator
 function ENT:Rep_Replicate()
 	local replicator_limit = GetConVarNumber("replicator_limit");
-	local replicator_repn_required_material = GetConVarNumber("replicator_repn_required_material");
+	local repn_required_material = GetConVarNumber("replicator_repn_required_material");
 
 	-- spawn new replicator (queen not available)
-	if (table.Count(Replicators.Reps) < replicator_limit and
-			self:Rep_GetResource(self, "metal") >= replicator_repn_required_material) then
+	if (table.Count(ents.FindByClass("rep_n")) < replicator_limit and
+			self:Rep_GetResource(self, "metal") >= repn_required_material) then
 
 		--spawn new rep
 		local pos = self:GetPos() + (self:GetForward() * 60);
@@ -33,64 +33,37 @@ function ENT:Rep_Replicate()
 		rep:Spawn();
 		rep.leader = self;
 		self.minions[rep:EntIndex()] = rep;
-		self:Rep_SetResource(self, "metal", self:Rep_GetResource("metal") - replicator_repn_required_material);
+		self:Rep_SetResource(self, "metal", self:Rep_GetResource("metal") - repn_required_material);
 	end	
 end
 
-function ENT:Rep_AI_Make_Queen()
-	if (not self.leader or not ValidEntity(self.leader)) then
+-- Rep_MakeQueen @jdm12989
+-- Upgrades from spider to queen
+function ENT:Rep_MakeQueen()
+	local repn_required_material = GetConVarNumber("replicator_repn_required_material");
+	local repq_required_material = GetConVarNumber("replicator_repq_required_material");
+
+	-- if not a minion then upgrade
+	if (not self.leader or not self.leader:IsValid()) then
 		-- form queen or gather more material & energy
-		if (self.material_metal >= 3000) then
-			self.material_metal = self.material_metal - 1000;
-			Replicators.Remove(self);
-			self:Remove();
+		if (Replicators.Resources.Get(self, "metal") >= repq_required_material + repn_required_material) then
+			-- consume resources
+			Replicators.Resources.Consume(self, "metal", repq_required_material);			
+
+			-- play upgrade animation
+
+			-- create the queen
 			local e = ents.Create("rep_q");
 			e:SetPos(self:GetPos());
 			e:SetAngles(self:GetAngles());
 			e:Spawn();
-			e.material_metal = self.material_metal;
-		else
-			self:Rep_AI_Gather(3000);
-			if (not self.tasks) then
-				self:Rep_AI_Wander();
-			end
-		end	
-		self.tasks = true;
-	else
-		self.tasks = false;
-	end
-end
 
-function ENT:Rep_AI_Replicate_Blocks()
-	if (table.Count(Replicators.Reps) >= GetConVarNumber("replicator_limit")) then return end;
-	
-	-- create blocks
-	local pos = self:GetPos() + (self:GetForward() * 60);
-	if (self.materials >= 20) then
-		--spawns blocks
-		local block = ents.Create("block");
-		block:SetPos(pos);
-		block:Spawn();
-		block.dead = false;
-		self.materials = self.materials - 20;
-	end
+			-- transfer resources to self
+			Replicators.Resources.Transfer(self, e, "metal", Replicators.GetResource(self, "metal"));
+			Replicators.Resources.Transfer(self, e, "energy", Replicators.GetResource(self, "energy"));
 
-	-- form rep from blocks
-	local blocks_near = {};
-	local ents = ents.FindInSphere(pos,60);
-	for _,v in pairs(ents) do
-		if (v:GetClass() == "block") then
-			table.insert(blocks_near,v);
+			-- remove old self
+			self:Remove();
 		end
-	end
-	if (#blocks_near >= Replicators.RequiredNumber["rep_n"]) then
-		-- remove blocks
-		for _,v in pairs(blocks_near) do
-			v:Remove();
-		end
-		-- spawn rep
-		local rep = ents.Create("rep_n");
-		rep:SetPos(pos);
-		rep:Spawn();
 	end
 end

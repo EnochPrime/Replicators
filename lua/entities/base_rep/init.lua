@@ -27,12 +27,9 @@ function ENT:gcbt_breakactions() end; ENT.hasdamagecase = true;
 
 -- Initialize @jdm12989
 function ENT:Initialize()
---	self.ENTINDEX = self:EntIndex();
-	self:SetModel(self.Model);
-	self:SetMaterial("replicators/block");
+--	self:SetModel(self.Model);
+--	self:SetMaterial("replicators/block");
 	self:SetBloodColor(DONT_BLEED);
-
-	Replicators.Add(self);
 	
 	-- INTELLIGENCE
 	self.ai = self:GetClass()..".lua";
@@ -45,9 +42,9 @@ function ENT:Initialize()
 	self.minions = {};
 	self.max_minions = 0;
 	self.tasks = false;
-	
-	-- RESOURCES
-	self:Rep_SetupResources(self, { 0, 100000 });
+
+	self.rep_defaultMetal = 0;
+	self.rep_defaultEnergy = 1000000;
 end
 
 -- OnInjured @jdm12989
@@ -61,7 +58,18 @@ function ENT:OnKilled(info)
 	if (self.leader and self.leader:IsValid()) then
 		table.remove(self.leader.minions, self:EntIndex());
 	end
-	self:Remove();
+
+	-- report death and ragdoll
+	hook.Call("OnNPCKilled", GAMEMODE, self, info:GetAttacker(), info:GetInflictor());
+	self:BecomeRagdoll(info);
+end
+
+-- OnRemove @jdm12989
+function ENT:OnRemove()
+	Replicators.Remove(self);
+	if (self.leader and self.leader:IsValid()) then
+		table.remove(self.leader.minions, self:EntIndex());
+	end
 end
 
 --[[############### Allows the code to be changed @JDM12989
@@ -100,31 +108,6 @@ function ENT:BehaveUpdate()
 	if (ok == false) then
 		self.BehaveThread = nil
 		Msg(self, "error: ", message, "\n");
-	end
-end
-
---################# AI Main Loop @JDM12989
-function ENT:RunBehaviour()
-	while (true) do
---		MsgN("run behavior");	
-		
-		-- set default speed		
-		self.loco:SetDesiredSpeed(65);
-
-		-- replicate!
-		self:Rep_Replicate();
-
-		-- always get resources
-		if (self:Rep_ResourcesAvailable()) then
-			if (self:GetRangeTo(self:GetTarget()) <= 40) then
-	 	 	 	self:Rep_GatherResource();
-			else
-				self:Rep_MoveToTarget();
-			end
-		-- if no tasks then wander
-		else
-			self:Rep_Wander();
-		end
 	end
 end
 

@@ -4,15 +4,15 @@ Replicators.HasCD = #file.Find("autorun/server/sv_cds_core.lua","LUA") == 1;
 Replicators.HasGC = #file.Find("weapons/gmod_tool/stools/gcombat.lua","LUA") == 1;
 Replicators.HasSG = #file.Find("autorun/stargate.lua","LUA") == 1;
 
-Replicators.Reps = {};
 -- maximum number of replicators that can be present
 CreateConVar("replicator_limit", "25", FCVAR_ARCHIVE);
 -- number of replicators which can target entity
 CreateConVar("replicator_limit_bunch", "5", FCVAR_ARCHIVE);
 -- number of resources a replicator can carry
 CreateConVar("replicator_max_material_carry", "1000", FCVAR_ARCHIVE);
--- number of resources to create a repn
+-- number of resources to create replicators
 CreateConVar("replicator_repn_required_material", "1000", FCVAR_ARCHIVE);
+CreateConVar("replicator_repq_required_material", "1000", FCVAR_ARCHIVE);
 
 Replicators.Enemies = {};
 Replicators.Human_Number = 1;	-- humanform number
@@ -37,19 +37,11 @@ Replicators.IgnoreMe = {
 	"models/zup/sg_rings/ring.mdl",
 };
 
---################# Register Rep @JDM12989
-function Replicators.Add(e)
-	table.insert(Replicators.Reps,e);
-end
-
---################# Remove Rep @JDM12989
+-- Remove @jdm12989
+-- Decrements counters for replicator types
 function Replicators.Remove(e)
-	for k,v in pairs(Replicators.Reps) do
-		if (v == e) then
-			table.remove(Replicators.Reps,k);
-		end
-	end
-	if (table.Count(Replicators.Reps) == 0) then
+	-- check if all replicators are dead
+	if (table.Count(ents.FindByClass("rep_n")) == 0 and table.Count(ents.FindByClass("rep_q")) == 0) then
 		Replicators.Enemies = {};
 		Replicators.Immunities = {};
 		Replicators.FreqLog = {};

@@ -32,15 +32,11 @@ end
 -- Rep_GatherResource @jdm12989
 -- Collects resources from target and performs animation
 function ENT:Rep_GatherResource()
-	-- setup entity maximum resources
-	if (self:GetTarget() and self:GetTarget():IsValid()) then
-		self:Rep_SetupResources(self:GetTarget(), { 10 * self:GetTarget():GetPhysicsObject():GetMass(), 0 });
-	else
-		coroutine.yield();
-	end
+	-- if target is no longer valid, yield	
+	if (!self:GetTarget() and !self:GetTarget():IsValid()) then coroutine.yield(); end
 
 	-- collect resources
-	self:Rep_Transfer("metal", 10, self:GetTarget());	
+	Replicators.Resources.Transfer(self, self:GetTarget(), "metal", 10);
 
 	-- play eat animation and wait until completion
 	self.loco:FaceTowards(self:GetTarget():GetPos());	
@@ -48,7 +44,7 @@ function ENT:Rep_GatherResource()
 	coroutine.wait(1);	-- add pause since there is no animation yet
 
 	-- remove entity if all resources consumed
-	if (self:GetTarget() and self:GetTarget():IsValid() and self:Rep_GetResource(self:GetTarget(), "metal") <= 0) then
+	if (self:GetTarget() and self:GetTarget():IsValid() and Replicators.Resources.Get(self:GetTarget(), "metal") <= 0) then
 		self:GetTarget():Remove();
 	end
 end

@@ -1,9 +1,11 @@
 ### Rev.003 (xx.xx.2014)
 	[rem] cleaned up unneeded files
 	[add] added more legal text and comments
-	[fix] stops reps from bleeding
 	[add] added resource module
+*	[add] addedreplicator queen
 *	[upd] updated attack module, not in use
+	[upd] moved runbehaviour from base to individual ents
+	[fix] stops reps from bleeding
 	[fix] put correct texture on replicator
 
 ### Rev.002 (28.03.2014)

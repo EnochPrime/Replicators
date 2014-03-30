@@ -1,5 +1,5 @@
 --[[
-	Replicator Spider for GarrysMod
+	Replicator Queen for GarrysMod
 	Copyright (C) 2014
 
 	This program is free software: you can redistribute it and/or modify
@@ -28,41 +28,33 @@ function ENT:Initialize()
 	-- call base class init
 	self.BaseClass.Initialize(self);
 
-	self:SetModel("models/replicators/rep_n/rep_n.mdl");
+	self:SetModel("models/AntLion.mdl");
 	self:SetMaterial("replicators/block");
-	self:SetCollisionBounds(Vector(-4, -4, 0), Vector(4, 4, 64));
-	self:SetHealth(25);
+	self:SetHealth(100);
+	self:Rep_SetupResources(self, { 1000, 100000 });
 
-	self.leader = self:Find("rep_q");	-- default leader to nearest queen
+	--self.max_minions = 10;
+	
+	--[[ gain control of unallocated reps
+	for k,v in pairs(Replicators.Reps) do
+		if (v ~= self and v.leader == nil) then
+			v.leader = self;
+			self.minions[k] = v;
+			v:SetCode("rep_test.txt");
+		end
+	end]]
 end
 
 -- RunBehavior @jdm12989
 function ENT:RunBehaviour()
 	while (true) do
---		MsgN("run behavior");	
-		
 		-- set default speed		
 		self.loco:SetDesiredSpeed(65);
 
-		-- if no queen exists
-		if (table.Count(ents.FindByClass("rep_q")) <= 0) then
-			MsgN("Resources: " .. Replicators.GetResource(self, "metal"));			
-			self:Rep_MakeQueen();
-		end
-
 		-- replicate!
-		--self:Rep_Replicate();
+		self:Rep_Replicate();
 
-		-- always get resources
-		if (self:Rep_ResourcesAvailable()) then
-			if (self:GetRangeTo(self:GetTarget()) <= 40) then
-	 	 	 	self:Rep_GatherResource();
-			else
-				self:Rep_MoveToTarget();
-			end
-		-- if no tasks then wander
-		else
-			self:Rep_Wander();
-		end
+		-- can't have loop end too quickly or game will freeze
+		coroutine.wait(1);
 	end
 end

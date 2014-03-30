@@ -1,5 +1,5 @@
 --[[
-	Replicator Spider for GarrysMod
+	Replicator Queen for GarrysMod
 	Copyright (C) 2014
 
 	This program is free software: you can redistribute it and/or modify
@@ -17,4 +17,4 @@
 ]]
 
 include("shared.lua");
-language.Add("rep_n","Replicator");
+language.Add("rep_q","Replicator Queen");
