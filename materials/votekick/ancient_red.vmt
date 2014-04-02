@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "Votekick/ancient_red"
+	"$surfaceprop" "metal"
+	"$model"     1
+}

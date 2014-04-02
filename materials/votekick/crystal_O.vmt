@@ -1,0 +1,10 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "Votekick/crystal_O"
+	"$nocull" 0	
+	"$translucent" 1
+	"$surfaceprop" "metal"
+	"$model" 1
+}
+
+
