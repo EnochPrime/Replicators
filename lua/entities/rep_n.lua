@@ -17,11 +17,16 @@
 ]]
 
 -- Header
-AddCSLuaFile("cl_init.lua");
-AddCSLuaFile("shared.lua");
-include("shared.lua");
+AddCSLuaFile("rep_n.lua");
+ENT.Base			= "base_rep";
+ENT.PrintName	= "Replicator";
+ENT.Author		= "JDM12989";
 
--- NPC Code
+if (CLIENT) then
+language.Add("rep_n","Replicator");
+end
+
+if (SERVER) then
 
 -- Initialize @jdm12989
 function ENT:Initialize()
@@ -49,6 +54,14 @@ function ENT:RunBehaviour()
 			self:Rep_MakeQueen();
 		end
 
+		--[[
+		if resourceAvail and (not maxcap or noqueen) then gather
+		elseif maxcap and queen then bring to queen
+		else wander
+
+		need to have target separate from resources or else queen will get eatten
+		]]
+
 		-- always get resources
 		if (self:Rep_ResourcesAvailable()) then
 			if (self:GetRangeTo(self:GetTarget()) <= 40) then
@@ -61,4 +74,6 @@ function ENT:RunBehaviour()
 			self:Rep_Wander();
 		end
 	end
+end
+
 end

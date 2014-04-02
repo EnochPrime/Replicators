@@ -17,11 +17,16 @@
 ]]
 
 -- Header
-AddCSLuaFile("cl_init.lua");
-AddCSLuaFile("shared.lua");
-include("shared.lua");
+AddCSLuaFile("rep_q.lua");
+ENT.Base			= "base_rep";
+ENT.PrintName	= "Replicator Queen";
+ENT.Author		= "JDM12989";
 
--- NPC Code
+if (CLIENT) then
+language.Add("rep_q","Replicator Queen");
+end
+
+if (SERVER) then
 
 -- Initialize @jdm12989
 function ENT:Initialize()
@@ -56,4 +61,6 @@ function ENT:RunBehaviour()
 		-- can't have loop end too quickly or game will freeze
 		coroutine.wait(1);
 	end
+end
+
 end
