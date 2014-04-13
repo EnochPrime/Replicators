@@ -67,6 +67,7 @@ end
 
 -- OnRemove @jdm12989
 function ENT:OnRemove()
+	self.BehaveThread = nil;	
 	Replicators.Remove(self);
 	if (self.leader and self.leader:IsValid()) then
 		table.remove(self.leader.minions, self:EntIndex());

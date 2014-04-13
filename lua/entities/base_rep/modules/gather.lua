@@ -52,7 +52,7 @@ end
 -- Rep_ResourcesAvailable @jdm12989
 -- Returns true when resources are nearby
 function ENT:Rep_ResourcesAvailable()
-	if (self:GetTarget() and self:GetTarget():IsValid()) then
+	if (IsValid(self:GetTarget()) and self:GetTarget():GetClass() == "prop_physics") then
 	 	return true;
 	end
 

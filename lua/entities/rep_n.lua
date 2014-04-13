@@ -35,7 +35,8 @@ function ENT:Initialize()
 
 	self:SetModel("models/replicators/rep_n/rep_n.mdl");
 	self:SetMaterial("replicators/block");
-	self:SetCollisionBounds(Vector(-4, -4, 0), Vector(4, 4, 64));
+	self:SetCollisionBounds(Vector(-8, -16, 0), Vector(16, 16, 8));		-- width, length, height
+	self:SetSolid(SOLID_BBOX);
 	self:SetHealth(25);
 
 	self.leader = self:Find("rep_q");	-- default leader to nearest queen
@@ -43,7 +44,7 @@ end
 
 -- RunBehavior @jdm12989
 function ENT:RunBehaviour()
-	while (true) do
+	while (IsValid(self)) do
 --		MsgN("run behavior");	
 		
 		-- set default speed		
@@ -54,22 +55,39 @@ function ENT:RunBehaviour()
 			self:Rep_MakeQueen();
 		end
 
-		--[[
-		if resourceAvail and (not maxcap or noqueen) then gather
-		elseif maxcap and queen then bring to queen
-		else wander
-
-		need to have target separate from resources or else queen will get eatten
-		]]
-
-		-- always get resources
-		if (self:Rep_ResourcesAvailable()) then
-			if (self:GetRangeTo(self:GetTarget()) <= 40) then
-	 	 	 	self:Rep_GatherResource();
+		-- if resources available and not overloaded or missing queen, gather resources
+		if (self:Rep_ResourcesAvailable() and (Replicators.Resources.Get(self, "metal") < Replicators.Resources.GetMax(self, "metal") or table.Count(ents.FindByClass("rep_q")) <= 0)) then
+			-- if in range, eat resources, otherwise move closer
+			if (self:GetRangeTo(self:GetTarget()) <= 45) then
+				self:Rep_GatherResource();
 			else
-				self:Rep_MoveToTarget();
+				local options = {
+					tolerance = 45
+				};				
+				self:Rep_MoveToTarget(options);
 			end
-		-- if no tasks then wander
+
+		-- if overloaded and queen available, return resources
+		elseif (Replicators.Resources.Get(self, "metal") >= Replicators.Resources.GetMax(self, "metal") and table.Count(ents.FindByClass("rep_q")) > 0) then
+			-- target nearest queen
+			self:SetTarget(self:Find("rep_q"));
+
+			-- if in range, transfer resources, otherwise move closer
+			if (IsValid(self:GetTarget())) then
+				if (self:GetRangeTo(self:GetTarget()) <= 60) then
+					Replicators.Resources.Transfer(self, self:GetTarget(), "metal", Replicators.Resources.Get(self, "metal"));
+					coroutine.wait(1);
+				else
+					local options = {
+						tolerance = 60
+					};
+					self:Rep_MoveToTarget(options);
+				end
+			else
+				self:Rep_Wander();
+			end
+
+		-- if no tasks, wander
 		else
 			self:Rep_Wander();
 		end

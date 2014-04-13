@@ -31,7 +31,7 @@ function ENT:Rep_Replicate()
 		coroutine.wait(1);		-- wait because no animation exists
 
 		--spawn new rep
-		local pos = self:GetPos() + (self:GetForward() * 60);
+		local pos = self:GetPos() + (self:GetForward() * 60) + (self:GetUp() * 10);
 		local rep = ents.Create("rep_n");
 		rep:SetPos(pos);
 		rep:Spawn();
@@ -48,7 +48,7 @@ function ENT:Rep_MakeQueen()
 	local repq_required_material = GetConVarNumber("replicator_repq_required_material");
 
 	-- if not a minion then upgrade
-	if (not self.leader or not self.leader:IsValid()) then
+	if (not IsValid(self.leader)) then
 		-- form queen or gather more material & energy
 		if (Replicators.Resources.Get(self, "metal") >= repq_required_material + repn_required_material) then
 			-- consume resources

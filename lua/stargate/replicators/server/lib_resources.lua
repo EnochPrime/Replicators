@@ -85,6 +85,28 @@ function Replicators.Resources.Get(ent, resType)
 	return 0;
 end
 
+-- Resources.GetMax @jdm12989
+function Replicators.Resources.GetMax(ent, resType)
+	-- if resource distribution is installed
+	-- use that system
+
+	-- default to replicator system
+	local repn_max_material = GetConVarNumber("replicator_max_material_carry");
+
+	if (IsValid(ent) and Replicators.Resources.Initialize(ent)) then
+		if (resType == "metal") then
+			return ent.rep_resource.metal_max or repn_max_material;
+		elseif (resType == "energy") then
+			return ent.rep_resource.energy_max or 0;
+		else
+			-- not a valid resource type
+			return 0;
+		end
+	end
+
+	return 0;
+end
+
 -- Resources.Transfer @jdm12989
 function Replicators.Resources.Transfer(source, target, resType, value)
 	-- if resource distribution is installed
