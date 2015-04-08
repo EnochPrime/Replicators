@@ -50,6 +50,35 @@ function ENT:RunBehaviour()
 		-- set default speed		
 		self.loco:SetDesiredSpeed(65);
 
+		-- determine target
+		local maxWeight = 0;
+		local tmpTarget;
+		for _,v in pairs ents.FindByClass("prop_physics") do
+			--if IsValid(v) and v:IsVisibleByRep then
+				local dist = v:GetPosition() - self:GetPosition();
+				w = math.Max(500 - dist, 0);
+			--else
+				--w = 0;
+			--end
+			
+			-- adjust to highest priority
+			if (w > maxWeight) then
+				maxWeight = w;
+				tmpTarget = v;
+			end
+		end
+		-- step through enemies
+			-- weight enemies based on aggressiveness and distance
+			for _,v in pairs Replicators.Enemies do
+				local cutoffDist = 500;
+				local dist = v:GetPosition() - self:GetPosition();
+				w = math.max(500-dist, 0);		-- weighting based only on distance
+			end
+		-- step all objects	
+			-- weight resources by quantity and distance
+			 
+	
+		
 		-- if no queen exists
 		if (table.Count(ents.FindByClass("rep_q")) <= 0) then		
 			self:Rep_MakeQueen();
